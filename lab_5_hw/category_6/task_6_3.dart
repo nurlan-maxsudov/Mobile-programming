@@ -1,0 +1,75 @@
+
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class Product {
+  final String name;
+  final double price;
+
+  const Product(this.name, this.price);
+}
+
+const products = [
+  Product('Laptop', 999.0),
+  Product('Phone', 599.5),
+  Product('Headphones', 79.9),
+];
+
+final router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/product-details',
+      builder: (context, state) {
+        final product = state.extra as Product;
+        return ProductScreen(product: product);
+      },
+    ),
+  ],
+);
+
+void main() => runApp(MaterialApp.router(routerConfig: router));
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Products')),
+      body: ListView(
+        children: [
+          for (final product in products)
+            ListTile(
+              title: Text(product.name),
+              onTap: () {
+                context.push(
+                  '/product-details',
+                  extra: product,
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProductScreen extends StatelessWidget {
+  final Product product;
+
+  const ProductScreen({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(product.name)),
+      body: Center(
+        child: Text('Price: \$${product.price}'),
+      ),
+    );
+  }
+}
