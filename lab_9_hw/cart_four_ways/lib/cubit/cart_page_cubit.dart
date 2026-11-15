@@ -11,7 +11,13 @@ class CubitCartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
+    // Part 4 / checkpoint 1: This provider owns and closes the page-scoped Cubit.
+    // Inside CartBody it would be below the page context, so the page could not
+    // read it to supply CartBody with state and callbacks.
     create: (_) => CartCubit(CheckoutApi()),
+    // Part 4 / checkpoint 3: BlocProvider maps to ProviderScope plus a provider;
+    // BlocListener maps to ref.listen, and BlocBuilder maps to ref.watch.
+    // context.read maps to ref.read; buildWhen/BlocSelector map to select.
     child: BlocListener<CartCubit, CartState>(
       listenWhen: (p, c) => p.status != c.status,
       listener: showCheckoutMessage,
@@ -53,6 +59,8 @@ class BlocCartSummary<B extends StateStreamable<CartState>>
 
   @override
   Widget build(BuildContext context) => BlocBuilder<B, CartState>(
+    // T3: Rebuild for displayed values, not typing or checkout status.
+    // Check every displayed value because different carts can have the same total.
     buildWhen: (p, c) =>
         p.total != c.total ||
         p.itemCount != c.itemCount ||

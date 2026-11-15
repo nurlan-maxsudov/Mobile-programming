@@ -9,6 +9,8 @@ class CartCubit extends Cubit<CartState> {
   final CheckoutApi _api;
   final _history = <CartState>[];
 
+  // Part 4 / checkpoint 2: Public Cubit methods publish state using emit.
+  // An equal coupon state is dropped by emit, so onChange does not print again.
   void _change(CartState next) {
     if (state.status == CheckoutStatus.submitting) return;
     if (next == state) {
@@ -16,6 +18,8 @@ class CartCubit extends Cubit<CartState> {
       return;
     }
     _history.add(state);
+    // T5: A plain getter on the Cubit is not observable by BlocBuilder.
+    // Emitting canUndo inside CartState makes the Undo button update correctly.
     emit(next.copyWith(canUndo: true));
   }
 
@@ -42,6 +46,8 @@ class CartCubit extends Cubit<CartState> {
       ),
     );
     try {
+      // T4 / checkpoint 5: BlocProvider closes the Cubit when the page is disposed.
+      // After await, isClosed prevents emit from throwing on an already closed Cubit.
       final id = await _api.submit(before.total);
       if (isClosed) return;
       _history.add(before);

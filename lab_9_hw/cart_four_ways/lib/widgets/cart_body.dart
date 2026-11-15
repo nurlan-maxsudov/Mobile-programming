@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/cart.dart';
 
 // The only local state is the text being typed. Cart state comes from the page.
+// Part 1: Callbacks let all four styles reuse this UI without provider imports.
+// Only the unfinished text is local; the page/state holder owns the applied coupon.
 class CartBody extends StatefulWidget {
   const CartBody({
     super.key,

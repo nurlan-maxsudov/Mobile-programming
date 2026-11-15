@@ -11,10 +11,18 @@ class SetStateCartPage extends StatefulWidget {
 }
 
 class _SetStateCartPageState extends State<SetStateCartPage> {
+  // Part 2 / checkpoint 1: This page owns state and discards it on disposal.
+  // For another page to read the cart, lift state to a common ancestor
+  // and pass callbacks, or use a shared state holder.
   CartState _state = CartState();
+  // T5: History lives in this State object; normal hot reload preserves it.
+  // Hot restart or leaving the page discards it, so returning starts fresh.
   final _history = <CartState>[];
   final _api = CheckoutApi();
 
+  // Checkpoints 2-3: There is no separate state-holder mutation API here.
+  // Page callbacks call setState to rebuild and pass fresh data to children.
+  // Save history before cart edits, not before checkout status changes.
   void _change(CartState next) {
     if (_state.status == CheckoutStatus.submitting || next == _state) return;
     ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
@@ -51,6 +59,8 @@ class _SetStateCartPageState extends State<SetStateCartPage> {
       ),
     );
     try {
+      // T4 / checkpoint 5: The user can leave while checkout awaits.
+      // The mounted guard prevents setState after disposal and invalid context use.
       final id = await _api.submit(before.total);
       if (!mounted) return;
       setState(() {

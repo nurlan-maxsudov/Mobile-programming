@@ -10,10 +10,17 @@ class RiverpodCartPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Part 3 / checkpoint 3: watch subscribes to displayed cart and Undo values.
+    // read gets the notifier for method calls without subscribing.
+    // Using read alone for displayed data would miss later updates.
     final state = ref.watch(cartProvider);
     final cart = ref.read(cartProvider.notifier);
     final canUndo = ref.watch(canUndoProvider);
+    // T2: Applying the same coupon twice produces equal state, so no second log.
+    // Without value equality, separate objects would normally compare unequal.
     ref.listen(cartProvider, (previous, next) => debugPrint('Riverpod: $next'));
+    // Part 3: listen runs messages as side effects when checkout status changes.
+    // read inside the listener fetches current state once; build only renders UI.
     ref.listen(cartProvider.select((s) => s.status), (previous, next) {
       showCheckoutMessage(context, ref.read(cartProvider));
     });
@@ -46,6 +53,9 @@ class RiverpodCartSummary extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // T3: select rebuilds this summary only when its displayed values change.
+    // Unlike rebuilding the setState page, status-only changes do not rebuild it.
+    // Typing is local to the TextField and does not mutate any cart.
     ref.watch(cartProvider.select((s) => s.total));
     // Watch the other displayed values too, even if a change leaves total equal.
     ref.watch(

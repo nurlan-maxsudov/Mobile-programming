@@ -14,6 +14,8 @@ void main() {
 
 class CartObserver extends BlocObserver {
   @override
+  // Part 5 T2: Transitions include the triggering event plus old and new state.
+  // Cubit onChange shows only old/new state because Cubit has no event layer.
   void onTransition(Bloc bloc, Transition transition) {
     debugPrint('Bloc: $transition');
     super.onTransition(bloc, transition);

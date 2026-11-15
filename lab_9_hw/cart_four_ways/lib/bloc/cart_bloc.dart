@@ -6,6 +6,8 @@ import '../services/checkout_api.dart';
 import 'cart_event.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
+  // Part 5: Handlers are concurrent by default, despite the sample explanation.
+  // These cart edits finish synchronously; checkout explicitly uses droppable.
   CartBloc(this._api) : super(CartState()) {
     on<CartProductAdded>(
       (event, emit) => _change(
@@ -43,11 +45,16 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         ),
       );
     });
+    // T4: droppable ignores extra checkout events until the active one finishes.
+    // Bloc handles this declaratively; the other styles check submitting manually.
+    // Without that guard, repeated Cubit calls could start multiple requests.
     on<CartCheckoutRequested>(_checkout, transformer: droppable());
   }
 
   final CheckoutApi _api;
 
+  // T5: Product, quantity and coupon edits save history; Undo consumes it.
+  // Checkout statuses do not save history, but successful cart clearing does.
   bool _isUndoable(CartEvent event) => switch (event) {
     CartProductAdded() ||
     CartProductRemoved() ||
@@ -59,6 +66,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   void _change(CartEvent event, CartState next, Emitter<CartState> emit) {
     if (state.status == CheckoutStatus.submitting || next == state) return;
     if (_isUndoable(event)) {
+      // T5: History belongs to CartState so changes can notify the UI.
+      // Snapshots omit their own history to avoid retaining nested histories.
       // Strip nested history so each entry is just a cart snapshot.
       final snapshot = state.copyWith(history: const [], canUndo: false);
       next = next.copyWith(
@@ -83,6 +92,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       ),
     );
     try {
+      // T4 / checkpoint 5: Closing the Bloc cancels active emitters.
+      // After await, emit.isDone prevents using a cancelled or completed emitter.
       final id = await _api.submit(before.total);
       if (emit.isDone) return;
       // Clearing the cart is undoable; submitting/failure status changes are not.

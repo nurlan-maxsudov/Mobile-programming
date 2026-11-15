@@ -14,6 +14,8 @@ void main() {
   final keyboard = catalog.first;
   setUp(() => api = MockCheckoutApi());
 
+  // T6: blocTest checks the full ordered sequence of emitted states.
+  // Riverpod tests mainly inspect final state without pumping any widgets.
   blocTest<CartCubit, CartState>(
     'emits the three exact cart states',
     build: () => CartCubit(api),

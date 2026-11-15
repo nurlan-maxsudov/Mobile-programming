@@ -1,5 +1,8 @@
 import '../models/cart.dart';
 
+// Part 5: Events name actions and help trace transitions or control concurrency.
+// They are useful for duplicate checkout handling but extra code for a simple +.
+// The sealed type lets a switch check that every event case is covered.
 sealed class CartEvent {
   const CartEvent();
   @override

@@ -13,6 +13,8 @@ class BlocCartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
+    // Checkpoint 1: This Bloc lives in a page-scoped BlocProvider.
+    // Leaving the page closes it and discards its cart and history.
     create: (_) => CartBloc(CheckoutApi()),
     child: BlocListener<CartBloc, CartState>(
       listenWhen: (p, c) => p.status != c.status,
@@ -35,6 +37,8 @@ class BlocCartPage extends StatelessWidget {
             ),
             body: CartBody(
               state: state,
+              // Checkpoint 2: The UI changes Bloc state only through add(event).
+              // Handlers emit results; Cubit and Notifier instead expose action methods.
               onAdd: (p) => cart.add(CartProductAdded(p)),
               onQtyChanged: (id, delta) => cart.add(CartQtyChanged(id, delta)),
               onApplyCoupon: (code) => cart.add(CartCouponApplied(code)),

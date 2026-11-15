@@ -22,6 +22,9 @@ const catalog = [
   Product(id: 'p3', name: 'Monitor', price: 199),
 ];
 
+// Part 1: Immutable lines and copyWith preserve previous states for Undo.
+// setState can rebuild after mutation, but mutation corrupts saved history
+// and other styles may skip notifications for the same object.
 class CartLine {
   const CartLine({required this.product, required this.qty});
   final Product product;
@@ -87,6 +90,8 @@ class CartState {
   // Only Bloc keeps its undo snapshots here. Other styles use a private list.
   final List<CartState> history;
 
+  // T3: Calculate totals from items and the coupon instead of storing them.
+  // A stored total could become outdated after a quantity change, coupon or Undo.
   int get itemCount => lines.itemCount;
   double get subtotal => lines.subtotal;
   double get discount => coupon == 'SAVE10' ? subtotal * 0.10 : 0;
@@ -127,6 +132,9 @@ class CartState {
     checkoutError: '',
   );
 
+  // Checkpoint 4: Equal states skip unnecessary notifications and rebuilds.
+  // Keep state and lists immutable, with matching value-based ==/hashCode.
+  // Equivalent coupon states then compare equal instead of causing extra updates.
   @override
   bool operator ==(Object other) =>
       other is CartState &&
