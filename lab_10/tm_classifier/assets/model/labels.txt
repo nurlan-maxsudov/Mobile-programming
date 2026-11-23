@@ -1,0 +1,6 @@
+0 Nothing
+1 Bottle
+2 Phone
+3 Glasses
+4 Mouse
+5 Card

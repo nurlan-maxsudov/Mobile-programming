@@ -1,0 +1,27 @@
+name: tm_classifier
+description: "Lab 10: on-device Teachable Machine image classifier."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.6.0
+  image: ^4.13.1
+  image_picker: ^1.2.4
+  tflite_flutter: ^0.12.1
+
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/model/
