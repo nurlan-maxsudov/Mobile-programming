@@ -105,32 +105,3 @@ flutter test
 flutter test integration_test/classifier_test.dart -d <device-id>
 ```
 
-The integration test requires an Android/iOS device or emulator. It runs the
-real model on the supplied bottle photo, checks that Bottle is first and the
-probabilities sum to one, rejects text bytes, exercises the result screen, and
-checks a missing-model startup error. Unit/widget tests use a fake classifier
-only for UI state and lifecycle checks; their confidence values are not model
-measurements. They also test the actual sample's image preprocessing.
-
-Latest validation: static analysis is clean, all 22 unit/widget tests pass, and
-the updated debug APK builds. Java 17 resolves the Android build-tool errors.
-`android/build.gradle.kts` also aligns tflite_flutter 0.12.1's Kotlin target with
-its Java 11 target. Source tests cover camera/gallery bytes, cancellation,
-permission errors, URL validation, status/content type, timeout, download limits,
-and saved History navigation. Model accuracy still needs the lab's evaluation;
-the bundled sample currently scores Glasses 39.4% and Bottle 34.8% on the emulator,
-so the integration test's Bottle-first accuracy assertion is not yet satisfied.
-The updated app was installed and the Home screen/camera launch were observed.
-The emulator disconnected before the full gallery check; end-to-end native source
-and History demonstrations still need to be completed.
-
-## Lab checkpoints
-
-1. Train and export your own model: `p1-model`.
-2. Verify assets, dependencies, and a device build: `p2-setup`.
-3. Implement the classifier and two label parser tests: `p3-classifier`.
-4. Implement the five screens using a credited Figma design: `p4-screens`.
-5. Connect all sources, History, and evaluation: `p5-sources`.
-
-Commit and tag each checkpoint only when it is complete; push commits and tags
-for the demonstration. Run `flutter analyze` and `flutter test`.
