@@ -15,3 +15,17 @@ The request returned status code `404` with this body:
 ```
 
 This means there is no product with ID `0`.
+
+## Part 2: Models from JSON
+
+**Question: What exactly happens if you write `json['price'] as double` and the server sends `10`? Is the error found at compile time or at run time?**
+
+JSON decoding turns `10` into an `int`. Using `as double` does not convert it, so the cast fails at runtime with a type error. The compiler cannot catch this because the value coming from the map is dynamic. Using `(json['price'] as num).toDouble()` works for both `10` and `9.99`.
+
+**Question: Why is it better to test `fromJson` with a saved file than with a live request?**
+
+A saved file gives the test the same input every time, and it works without an internet connection. If the test fails, we can focus on the parsing code instead of wondering whether the server is down or its data has changed.
+
+**Question: What happens when `brand` and `tags` are missing?**
+
+A missing `brand` becomes `null`, since not every product has a brand. I chose to make missing `tags` an empty list. That way, the product still loads and there are simply no tags to display.
