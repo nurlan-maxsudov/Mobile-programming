@@ -29,3 +29,15 @@ A saved file gives the test the same input every time, and it works without an i
 **Question: What happens when `brand` and `tags` are missing?**
 
 A missing `brand` becomes `null`, since not every product has a brand. I chose to make missing `tags` an empty list. That way, the product still loads and there are simply no tags to display.
+
+## Part 4: A Cubit for the list
+
+**Question: Add `?delay=3000` to the list request. Leave the screen during the wait: what would happen without the `isClosed` check?**
+
+If leaving the screen disposes its `BlocProvider`, the Cubit is closed while the request is still waiting. When the response arrives, calling `emit` on that closed Cubit throws a `StateError`. The `isClosed` check lets us stop without trying to update a screen that has already been disposed. Just opening the details screen keeps the list route alive, so that alone does not close the list Cubit.
+
+The delayed navigation experiment has not been run on a device yet.
+
+**Question: Why does the test use `isA<…>()` instead of `ProductsLoaded([...])`? What would you add to the state class to compare by value?**
+
+The test is checking the order of state types: loading first, then loaded or error. Two separately created `ProductsLoaded` objects are not equal by default, even if they contain the same data. To compare them by value, I would implement `==` and `hashCode`, or use `Equatable` and list the fields to compare. The product objects inside the list would also need value equality.
